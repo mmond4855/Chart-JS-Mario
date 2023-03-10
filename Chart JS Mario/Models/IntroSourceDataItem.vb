@@ -17,3 +17,14 @@ Public Class QuoteItem
 
     End Sub
 End Class
+
+Public Class CarManufacturer
+    Public Property MFGName As String
+    Public Property YearlySalesValues As New List(Of String)
+    Public Property YearlySoldValues As New List(Of String)
+
+    Public Sub New()
+
+    End Sub
+
+End Class
