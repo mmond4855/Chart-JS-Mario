@@ -87,7 +87,7 @@ Public Class ChartJSColors
                                                                         End Function
 
 
-        Static Dim NumRandom As New Random
+        Dim NumRandom As New Random
         Dim ShuffledList As List(Of Color) = Me.SysColors.ToList
         For CurrentListIndex = 0 To ShuffledList.Count - 1
             Dim RandomIndex = NumRandom.Next(CurrentListIndex, ShuffledList.Count)
