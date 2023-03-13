@@ -1,10 +1,10 @@
 ﻿Imports System.Drawing
-
+Imports System.Web.Services
 Public Class _Default
     Inherits Page
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As EventArgs) Handles Me.Load
-        GenerateCounts()
+        Dim ChartConfig As String = New CarMFGData().GetCarSalesAmountData()
     End Sub
 
 
@@ -21,6 +21,14 @@ Public Class _Default
         '    Dim x As Color = color.GetValue(Nothing, Nothing)
         'Next
     End Sub
+
+    <WebMethod>
+    Public Shared Function GetCarSalesAmountData() As String
+        Dim ChartConfig As String = New CarMFGData().GetCarSalesAmountData()
+
+        Return ChartConfig
+    End Function
+
 
     Private Sub GenerateCounts()
         Dim NumRandom As New Random

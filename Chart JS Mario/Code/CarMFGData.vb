@@ -5,12 +5,14 @@ Imports Newtonsoft.Json
 Public Class CarMFGData
 
     Private Property CurrentDate As Date = Date.Now
+    Private Property CarMFGs As New List(Of String) From {"Subaru", "BMW", "Ford", "Toyota", "Jeep"}
+    Private Property CarSalesData As List(Of CarManufacturer) = GenerateCarSalesList(Me.CarMFGs)
 
     Public Sub New()
 
     End Sub
 
-    Public Function GetCarSalesData() As String
+    Public Function GetCarSalesAmountData() As String
         Dim JSONString As String = ""
 
         'Each month will represent a XAxisLabel.
@@ -49,7 +51,7 @@ Public Class CarMFGData
             Dim Index As Integer = 0
 
             'Picks four colors for each metric function.
-            Do Until .Count = JSDataSetFunctionNames.Count
+            Do Until .Count = Me.CarMFGs.Count
                 Dim JSColors As New ChartJSColors()
                 Dim SystemSelectedColor As String = HexaDecimalConv(JSColors.SelectedColor)
 
@@ -59,33 +61,28 @@ Public Class CarMFGData
             Loop
         End With
 
-        Dim CarSalesData As List(Of CarManufacturer) = GenerateCarSalesList()
-
         'Group of datasets. Should be a total of two.
         Dim JSDataSets As New ChartJSDatasets() With {.ChartJSDatasetsLabels = XAxisLabels}
         With JSDataSets
             .MainChartTitle = ""
 
-            For Each JSDataSetFunction In JSDataSetFunctions
-
-                Dim DataSetFunctionIndex As Integer = JSDataSetFunctions.IndexOf(JSDataSetFunction) 'Gets the function index (Func).
-                Dim JSDataSetFunctionName As String = JSDataSetFunctionNames(DataSetFunctionIndex) 'Gets the function name.
-                Dim JSSelectedBarColor As String = SystemSelectedColors(DataSetFunctionIndex) 'Gets the system selected color.
-
+            For i = 0 To Me.CarSalesData.Count - 1
 
                 'Chart JS Dataset. For this code each data set represents the metric.
                 Dim JSDataSet As New ChartJSDataset()
                 With JSDataSet
-                    Dim CurrentJSDataSetFunction As Func(Of CarManufacturer, List(Of String)) = TryCast(JSDataSetFunction, Func(Of CarManufacturer, List(Of String)))
+                    Dim JSDataSetName As String = CarSalesData(i).MFGName
+                    Dim JSSelectedBarColor As String = SystemSelectedColors(i) 'Gets the system selected color.
 
-                    Dim Values As List(Of String) = CurrentJSDataSetFunction()
+                    Dim Values As List(Of String) = CarSalesData(i).YearlySalesAmtValues
 
-                    .ChartJSTooltipLabel = JSDataSetFunctionName 'Label for Tooltip
+                    .YValues = Values
+
+                    .ChartJSTooltipLabel = JSDataSetName 'Label for Tooltip
                     .BackgroundColor = JSSelectedBarColor 'Selected Background Color
                     .BorderColor = JSSelectedBarColor 'Selected Border Color
                 End With
 
-                'Adds Dataset to list of datasets.
                 .ChartJsDatasets.Add(JSDataSet)
             Next
 
@@ -109,11 +106,16 @@ Public Class CarMFGData
 
     End Function
 
-    Public Function GenerateCarSalesList() As List(Of CarManufacturer)
-        Return New List(Of CarManufacturer) From {
-            New CarManufacturer() With {.MFGName = "Subaru"}, New CarManufacturer() With {.MFGName = "Toyota"},
-            New CarManufacturer() With {.MFGName = "Ford"}, New CarManufacturer() With {.MFGName = "BMW"}
-        }
+    Public Function GenerateCarSalesList(ByVal CarMFGs As List(Of String)) As List(Of CarManufacturer)
+        Dim CarMFGList As New List(Of CarManufacturer)
+        With CarMFGList
+            For Each CarMFG In CarMFGs
+                .Add(New CarManufacturer() With {.MFGName = CarMFG})
+            Next
+
+        End With
+        Return CarMFGList
+
     End Function
 
     Private Sub GenerateSales()
